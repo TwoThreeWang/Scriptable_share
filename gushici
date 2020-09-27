@@ -1,0 +1,29 @@
+// 随机一句古诗词小组件
+const shici = await fetchShiCi()
+const widget = createWidget()
+Script.setWidget(widget)
+Script.complete()
+console.log("success")
+
+function createWidget() {
+  const w = new ListWidget()
+
+  const bgColor = new LinearGradient()
+  bgColor.colors = [new Color("#ffff00")]
+  bgColor.locations = [1.0]
+  w.backgroundGradient = bgColor
+
+  const firstLine = w.addText(`[📕] ${shici}`)
+  firstLine.textSize = 12
+  firstLine.textColor = Color.white()
+
+  return w
+}
+
+async function fetchShiCi() {
+  const url = "https://v1.jinrishici.com/all.txt"
+  const request = new Request(url)
+  const resp = await request.loadString()
+
+  return resp
+}
