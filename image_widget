@@ -1,0 +1,16 @@
+// 小组件显示一张图片，自己修改图片链接即可
+let widget = await createWidget()
+if (!config.runsInWidget) {
+  await widget.presentMedium()
+}
+Script.setWidget(widget)
+Script.complete()
+
+async function createWidget() {
+  let w = new ListWidget()
+  let imgURL = "https://c-ssl.duitang.com/uploads/item/202008/23/20200823054830_wGLrA.thumb.700_0.jpeg"
+  let imgReq = new Request(imgURL)
+  let img = await imgReq.loadImage()
+  w.backgroundImage = img
+  return w
+}
