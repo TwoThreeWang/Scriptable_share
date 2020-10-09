@@ -1,5 +1,6 @@
 // 大组件显示问候语、时间、日历事件和天气
 
+
 /* -- PREVIEW YOUR WIDGET -- */
 // 修改为你所在城市
 const City = '北京'
@@ -64,7 +65,7 @@ const fontName = "Futura-Medium"
 // 字体颜色
 const fontColor = new Color("#ffffff")
 
-// Change the font sizes for each element.
+// 更改每个元素的字体大小。
 const greetingSize = 18
 const dateSize = 34
 const dayOfWeekSize = 13
@@ -72,25 +73,25 @@ const eventTitleSize = 14
 const eventTimeSize = 12
 const noEventMessageSize = 12
 
-/* -- RESET YOUR WIDGET -- */
+/* -- 初始化小组件 -- */
 
-// Change to true to reset the widget background.
+// 更改为true以重置小部件背景。
 const resetWidget = false
 
 /*
- * The code below this comment is the widget logic - a bit more complex.
+ * 此注释下方的代码是小部件逻辑-稍微复杂一点。
  * =====================================================================
  */
 
-/* -- GLOBAL VALUES -- */
+/* -- 全局变量 -- */
 
-// Widgets are unique based on the name of the script.
+// 小部件基于脚本的名称是唯一的。
 const filename = Script.name() + ".jpg"
 const files = FileManager.local()
 const path = files.joinPath(files.documentsDirectory(), filename)
 const fileExists = files.fileExists(path)
 
-// Store other global values.
+// 存储其他全局值。
 const date = new Date()
 let widget = new ListWidget()
 
