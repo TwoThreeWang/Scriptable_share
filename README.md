@@ -7,3 +7,4 @@
 3. image_widget 小组件显示一张自定义图片
 4. is_today_work 今天上班吗小组件
 5. isFriday 今天是周五吗小组件
+6. big_info 大组件显示问候语、时间、日历事件和天气
