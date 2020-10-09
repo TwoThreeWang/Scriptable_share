@@ -29,14 +29,16 @@ async function createWidget() {
 
   w.addSpacer()
 
-  const oneLine = w.addText(`“今天是 ${data_json.data.jieri}”`)
+  const oneLine = w.addText(` “今天是 ${data_json.data.jieri}” `)
   oneLine.font = Font.boldSystemFont(18)
+  oneLine.centerAlignText()
   oneLine.textColor = Color.black()
   
   w.addText('')
 
-  const twoLine = w.addText(`“${du.msg}”`)
+  const twoLine = w.addText(` “${du.msg}” `)
   twoLine.font = Font.boldSystemFont(18)
+  twoLine.centerAlignText()
   twoLine.textColor = Color.black()
 
   return w
