@@ -5,13 +5,35 @@
 // 修改为你所在城市
 const City = '北京'
 const CityTQ = await getTQ()
+const dx = await getDX()
+const wnl = await getWNL()
 
+// 获取天气
 async function getTQ() {
     const CityURI = encodeURI(`${City}`);
     const url = `https://wttr.in/${CityURI}?format=3`;
     const request = new Request(url)
     const res = await request.loadString()
     return res
+}
+
+// 获取丁香日历
+async function getDX() {
+	const url = "https://dxy.com/app/i/ask/discover/todayfeed/healthcalendar"
+	const req = new Request(url)
+	const res = await req.loadJSON()
+	const i = new Request(res.data.items[0].pic_url)
+	const img = await i.loadImage()
+	const title = res.data.items[0].title
+	return {'img':img, 'title':title}
+}
+
+// 获取万年历
+async function getWNL() {
+	const url = "https://api.error.work/api/calendar"
+	const req = new Request(url)
+	const res = await req.loadJSON()
+	return res
 }
 
 // 更改为true 查看小部件的预览。
@@ -44,12 +66,12 @@ const numberOfEvents = 4
 const showTomorrow = true
 
 // 没有事件时写一条消息，或改成“”为空白。
-const noEventMessage = "Enjoy the rest of your day."
+const noEventMessage = "🔆 Enjoy the rest of your day."
 
 /* -- 间距 -- */
 
 // 可选 top, middle, or bottom.
-const verticalAlignment = "middle"
+const verticalAlignment = "top"
 
 // 可选 left, center, or right.
 const horizontalAlignment = "left"
@@ -63,7 +85,7 @@ const elementSpacing = 12
 const fontName = "Futura-Medium"
 
 // 字体颜色
-const fontColor = new Color("#ffffff")
+const fontColor = new Color("#000000")
 
 // 更改每个元素的字体大小。
 const greetingSize = 18
@@ -71,34 +93,23 @@ const dateSize = 34
 const dayOfWeekSize = 13
 const eventTitleSize = 14
 const eventTimeSize = 12
-const noEventMessageSize = 12
+const noEventMessageSize = 13
 
 /* -- 初始化小组件 -- */
-
-// 更改为true以重置小部件背景。
-const resetWidget = false
 
 /*
  * 此注释下方的代码是小部件逻辑-稍微复杂一点。
  * =====================================================================
  */
 
-/* -- 全局变量 -- */
-
-// 小部件基于脚本的名称是唯一的。
-const filename = Script.name() + ".jpg"
-const files = FileManager.local()
-const path = files.joinPath(files.documentsDirectory(), filename)
-const fileExists = files.fileExists(path)
-
 // 存储其他全局值。
 const date = new Date()
 let widget = new ListWidget()
 
 // 如果我们在窗口小部件中或正在测试中，先构建窗口小部件。
-if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
+if (config.runsInWidget || testMode) {
 
-  widget.backgroundImage = files.readImage(path)
+  widget.backgroundImage = dx.img
 
   if (verticalAlignment == "middle" || verticalAlignment == "bottom") {
     widget.addSpacer()
@@ -126,6 +137,16 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
     let dateText = widget.addText(df.string(date))
     formatText(dateText, dateSize)
   }
+  
+  // 格式化万年历
+  widget.addSpacer(elementSpacing)
+  let wnlEvents = widget.addText(`农历${wnl.data.nongli} ${wnl.data.jieri}`)
+  formatText(wnlEvents, eventTitleSize)
+  
+  // 格式化天气
+  widget.addSpacer(elementSpacing)
+  let TqEvents = widget.addText(`今天${wnl.data.work_tag} | ${CityTQ}`)
+  formatText(TqEvents, noEventMessageSize)
 
   // 添加日历事件。
   if (showEvents) {
@@ -158,11 +179,10 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
           // 在第一个明天活动之前添加明天标签。
           if (!multipleTomorrowEvents) {
             widget.addSpacer(elementSpacing)
-            let tomorrowText = widget.addText("TOMORROW")
+            let tomorrowText = widget.addText("Tomorrow")
             formatText(tomorrowText, eventTitleSize)
             multipleTomorrowEvents = true
           }
-          
           // 显示明天事件并增加计数器。
           displayEvent(widget, event)
           shownEvents++
@@ -171,20 +191,21 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
 
     }
 
-    // 如果没有事件，并且有一条消息，则显示消息。
-    if (shownEvents == 1 && noEventMessage != "" && noEventMessage != null) {
+    // 如果没有事件，并且设置了无日历消息，则显示消息。
+    if (shownEvents == 0 && noEventMessage != "" && noEventMessage != null) {
 
       widget.addSpacer(elementSpacing)
 
       let noEvents = widget.addText(noEventMessage)
       formatText(noEvents, noEventMessageSize)
     }
-    
-    widget.addSpacer(elementSpacing)
-    let TqEvents = widget.addText(`${CityTQ}`)
-    formatText(TqEvents, noEventMessageSize)
 
   }
+  
+  // 格式化健康日历
+  widget.addSpacer(elementSpacing)
+  let rlEvents = widget.addText(`🔆 “ ${dx.title} ”`)
+  formatText(rlEvents, noEventMessageSize)
 
   if (verticalAlignment == "top" || verticalAlignment == "middle") {
     widget.addSpacer()
@@ -200,7 +221,7 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
   Script.complete()
 
 // 如果正常运行，请转到日历。
-} else if (fileExists && !resetWidget) {
+} else if (!resetWidget) {
 
   const appleDate = new Date('2001/01/01')
   const timestamp = (date.getTime() - appleDate.getTime()) / 1000
@@ -208,74 +229,9 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
   callback.open()
   Script.complete()
 
-// 如果是第一次运行，请设置小部件背景。
+// 如果是第一次运行，请设置日历权限。
 } else {
-
-  // 确定用户是否拍摄了屏幕截图。
-  var message
-  message = "开始使用之前，请回到主屏幕并进入编辑模式。 滚动到最右边的空白页并截图。"
-  let exitOptions = ["继续", "退出以截屏"]
-  let shouldExit = await generateAlert(message, exitOptions)
-  if (shouldExit) return
-
-  // 获取屏幕截图并确定手机大小。
-  let img = await Photos.fromLibrary()
-  let height = img.size.height
-  let phone = phoneSizes()[height]
-  if (!phone) {
-    message = "您似乎选择了非iPhone屏幕快照的图像，或者不支持您的iPhone。 请使用其他图像再试一次。"
-    await generateAlert(message, ["OK"])
-    return
-  }
-
-  // 提示窗口小部件的大小和位置。
-  message = "要创建什么尺寸的小组件？"
-  let sizes = ["Small", "Medium", "Large"]
-  let size = await generateAlert(message, sizes)
-  let widgetSize = sizes[size]
-
-  message = "小组件在屏幕的什么位置？"
-  message += (height == 1136 ? " (请注意，您的设备仅支持两行小部件，因此中间和底部选项相同。)" : "")
-
-  // 根据手机大小确定图像裁剪。
-  let crop = { w: "", h: "", x: "", y: "" }
-  if (widgetSize == "Small") {
-    crop.w = phone.small
-    crop.h = phone.small
-    let positions = ["Top left", "Top right", "Middle left", "Middle right", "Bottom left", "Bottom right"]
-    let position = await generateAlert(message, positions)
-
-    // 将两个单词转换为电话尺寸字典的两个键。
-    let keys = positions[position].toLowerCase().split(' ')
-    crop.y = phone[keys[0]]
-    crop.x = phone[keys[1]]
-
-  } else if (widgetSize == "Medium") {
-    crop.w = phone.medium
-    crop.h = phone.small
-
-    // 中型和大型小部件具有固定的x值。
-    crop.x = phone.left
-    let positions = ["Top", "Middle", "Bottom"]
-    let position = await generateAlert(message, positions)
-    let key = positions[position].toLowerCase()
-    crop.y = phone[key]
-
-  } else if (widgetSize == "Large") {
-    crop.w = phone.medium
-    crop.h = phone.large
-    crop.x = phone.left
-    let positions = ["Top", "Bottom"]
-    let position = await generateAlert(message, positions)
-
-    // 底部的大窗口小部件的y值为“中间”。
-    crop.y = position ? phone.middle : phone.top
-  }
-
-  // 裁剪图像并完成小部件。
-  let imgCrop = cropImage(img, new Rect(crop.x, crop.y, crop.w, crop.h))
-  files.writeImage(path, imgCrop)
-  message = "您的小部件背景已准备就绪。 如果您尚未授予“日历”访问权限，则下一步将弹出。"
+  message = "如果您尚未授予“日历”访问权限，则下一步将弹出。"
   await generateAlert(message, ["OK"])
 
   // 确保我们具有日历访问权限。
@@ -388,97 +344,4 @@ async function generateAlert(message, options) {
 
   let response = await alert.presentAlert()
   return response
-}
-
-// 将图像裁剪为指定的矩形。
-function cropImage(img, rect) {
-
-  let draw = new DrawContext()
-  draw.size = new Size(rect.width, rect.height)
-
-  draw.drawImageAtPoint(img, new Point(-rect.x, -rect.y))
-  return draw.getImage()
-}
-
-// 所有支持的手机上小部件的像素大小和位置。
-function phoneSizes() {
-  let phones = {
-    "2688": {
-      "small": 507,
-      "medium": 1080,
-      "large": 1137,
-      "left": 81,
-      "right": 654,
-      "top": 228,
-      "middle": 858,
-      "bottom": 1488
-    },
-
-    "1792": {
-      "small": 338,
-      "medium": 720,
-      "large": 758,
-      "left": 54,
-      "right": 436,
-      "top": 160,
-      "middle": 580,
-      "bottom": 1000
-    },
-
-    "2436": {
-      "small": 465,
-      "medium": 987,
-      "large": 1035,
-      "left": 69,
-      "right": 591,
-      "top": 213,
-      "middle": 783,
-      "bottom": 1353
-    },
-
-    "2208": {
-      "small": 471,
-      "medium": 1044,
-      "large": 1071,
-      "left": 99,
-      "right": 672,
-      "top": 114,
-      "middle": 696,
-      "bottom": 1278
-    },
-
-    "1334": {
-      "small": 296,
-      "medium": 642,
-      "large": 648,
-      "left": 54,
-      "right": 400,
-      "top": 61,
-      "middle": 412,
-      "bottom": 764
-    },
-
-    "1136": {
-      "small": 282,
-      "medium": 584,
-      "large": 622,
-      "left": 30,
-      "right": 332,
-      "top": 59,
-      "middle": 399,
-      "bottom": 399
-    },
-    
-    "1624": {
-      "small": 310,
-      "medium": 658,
-      "large": 690,
-      "left": 46,
-      "right": 394,
-      "top": 142,
-      "middle": 522,
-      "bottom": 902 
-    }
-  }
-  return phones
 }
