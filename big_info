@@ -95,7 +95,7 @@ const fileExists = files.fileExists(path)
 const date = new Date()
 let widget = new ListWidget()
 
-// If we're in the widget or testing, build the widget.
+// 如果我们在窗口小部件中或正在测试中，先构建窗口小部件。
 if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
 
   widget.backgroundImage = files.readImage(path)
@@ -104,7 +104,7 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
     widget.addSpacer()
   }
 
-  // Format the greeting if we need it.
+  // 格式化问候语。
   if (showGreeting) {
     let greetingText = makeGreeting()
     let greeting = widget.addText(greetingText)
@@ -112,7 +112,7 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
     widget.addSpacer(elementSpacing)
   }
 
-  // Format the date info.
+  // 格式化日期。
   let df = new DateFormatter()
   if (dateDisplay.toLowerCase() == "ios") {
     df.dateFormat = "EEEE"
@@ -127,10 +127,10 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
     formatText(dateText, dateSize)
   }
 
-  // Add events if we're supposed to.
+  // 添加日历事件。
   if (showEvents) {
 
-    // Determine which events to show, and how many.
+    // 确定要显示哪些事件以及多少。
     const todayEvents = await CalendarEvent.today([])
     let shownEvents = 0
     
@@ -144,7 +144,7 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
       }
     }
 
-    // If there's room and we need to, show tomorrow's events.
+    // 如果需要的话，请显示明天的活动。
     let multipleTomorrowEvents = false
     if (showTomorrow && shownEvents < numberOfEvents) {
 
@@ -155,7 +155,7 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
           break
         }
         if (shouldShowEvent(event)) {
-          // Add the tomorrow label prior to the first tomorrow event.
+          // 在第一个明天活动之前添加明天标签。
           if (!multipleTomorrowEvents) {
             widget.addSpacer(elementSpacing)
             let tomorrowText = widget.addText("TOMORROW")
@@ -163,7 +163,7 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
             multipleTomorrowEvents = true
           }
           
-          // Show the tomorrow event and increment the counter.
+          // 显示明天事件并增加计数器。
           displayEvent(widget, event)
           shownEvents++
         }
@@ -171,7 +171,7 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
 
     }
 
-    // If there are no events and we have a message, display it.
+    // 如果没有事件，并且有一条消息，则显示消息。
     if (shownEvents == 1 && noEventMessage != "" && noEventMessage != null) {
 
       widget.addSpacer(elementSpacing)
@@ -199,7 +199,7 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
   }
   Script.complete()
 
-// If we're running normally, go to the calendar.
+// 如果正常运行，请转到日历。
 } else if (fileExists && !resetWidget) {
 
   const appleDate = new Date('2001/01/01')
@@ -208,36 +208,36 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
   callback.open()
   Script.complete()
 
-// If it's the first time it's running, set up the widget background.
+// 如果是第一次运行，请设置小部件背景。
 } else {
 
-  // Determine if user has taken the screenshot.
+  // 确定用户是否拍摄了屏幕截图。
   var message
-  message = "Before you start, go to your home screen and enter wiggle mode. Scroll to the empty page on the far right and take a screenshot."
-  let exitOptions = ["Continue", "Exit to Take Screenshot"]
+  message = "开始使用之前，请回到主屏幕并进入编辑模式。 滚动到最右边的空白页并截图。"
+  let exitOptions = ["继续", "退出以截屏"]
   let shouldExit = await generateAlert(message, exitOptions)
   if (shouldExit) return
 
-  // Get screenshot and determine phone size.
+  // 获取屏幕截图并确定手机大小。
   let img = await Photos.fromLibrary()
   let height = img.size.height
   let phone = phoneSizes()[height]
   if (!phone) {
-    message = "It looks like you selected an image that isn't an iPhone screenshot, or your iPhone is not supported. Try again with a different image."
+    message = "您似乎选择了非iPhone屏幕快照的图像，或者不支持您的iPhone。 请使用其他图像再试一次。"
     await generateAlert(message, ["OK"])
     return
   }
 
-  // Prompt for widget size and position.
-  message = "What size of widget are you creating?"
+  // 提示窗口小部件的大小和位置。
+  message = "要创建什么尺寸的小组件？"
   let sizes = ["Small", "Medium", "Large"]
   let size = await generateAlert(message, sizes)
   let widgetSize = sizes[size]
 
-  message = "What position will it be in?"
-  message += (height == 1136 ? " (Note that your device only supports two rows of widgets, so the middle and bottom options are the same.)" : "")
+  message = "小组件在屏幕的什么位置？"
+  message += (height == 1136 ? " (请注意，您的设备仅支持两行小部件，因此中间和底部选项相同。)" : "")
 
-  // Determine image crop based on phone size.
+  // 根据手机大小确定图像裁剪。
   let crop = { w: "", h: "", x: "", y: "" }
   if (widgetSize == "Small") {
     crop.w = phone.small
@@ -245,7 +245,7 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
     let positions = ["Top left", "Top right", "Middle left", "Middle right", "Bottom left", "Bottom right"]
     let position = await generateAlert(message, positions)
 
-    // Convert the two words into two keys for the phone size dictionary.
+    // 将两个单词转换为电话尺寸字典的两个键。
     let keys = positions[position].toLowerCase().split(' ')
     crop.y = phone[keys[0]]
     crop.x = phone[keys[1]]
@@ -254,7 +254,7 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
     crop.w = phone.medium
     crop.h = phone.small
 
-    // Medium and large widgets have a fixed x-value.
+    // 中型和大型小部件具有固定的x值。
     crop.x = phone.left
     let positions = ["Top", "Middle", "Bottom"]
     let position = await generateAlert(message, positions)
@@ -268,28 +268,28 @@ if (config.runsInWidget || (testMode && fileExists && !resetWidget)) {
     let positions = ["Top", "Bottom"]
     let position = await generateAlert(message, positions)
 
-    // Large widgets at the bottom have the "middle" y-value.
+    // 底部的大窗口小部件的y值为“中间”。
     crop.y = position ? phone.middle : phone.top
   }
 
-  // Crop image and finalize the widget.
+  // 裁剪图像并完成小部件。
   let imgCrop = cropImage(img, new Rect(crop.x, crop.y, crop.w, crop.h))
   files.writeImage(path, imgCrop)
-  message = "Your widget background is ready. If you haven't already granted Calendar access, it will pop up next."
+  message = "您的小部件背景已准备就绪。 如果您尚未授予“日历”访问权限，则下一步将弹出。"
   await generateAlert(message, ["OK"])
 
-  // Make sure we have calendar access.
+  // 确保我们具有日历访问权限。
   await CalendarEvent.today([])
 
   Script.complete()
 }
 
 /*
- * Helper functions
+ * 辅助功能
  * ================
  */
 
-// Return a greeting based on the time of day. Courtesy of riverwolf.
+// 根据一天中的时间返回问候语。 
 function makeGreeting() {
   let greeting = "Good "
   if (date.getHours() < 6) {
@@ -306,24 +306,24 @@ function makeGreeting() {
   return greeting
 }
 
-// Determine if an event should be shown.
+// 确定是否应显示事件。
 function shouldShowEvent(event) {
 
-  // Hack to remove canceled Office 365 events.
+  // 删除已取消的Office 365事件。
   if (event.title.startsWith("Canceled:")) {
     return false
   }
 
-  // If it's an all-day event, only show if the setting is active.
+  // 如果是全天活动，则仅在设置处于活动状态时显示。
   if (event.isAllDay) {
     return showAllDay
   }
 
-  // Otherwise, return the event if it's in the future.
+  // 否则，如果将来会返回该事件。
   return (event.startDate.getTime() > date.getTime())
 }
 
-// Provide the specified font.
+// 提供指定的字体。
 function provideFont(fontName, fontSize) {
   if (fontName == "" || fontName == null) {
     return Font.regularSystemFont(fontSize)
@@ -332,14 +332,14 @@ function provideFont(fontName, fontSize) {
   }
 }
 
-// Add an event to the widget.
+// 向小部件添加事件。
 function displayEvent(widget, event) {
   widget.addSpacer(elementSpacing)
 
   let title = widget.addText(event.title)
   formatText(title, eventTitleSize)
 
-  // If it's an all-day event, we don't need a time.
+  // 如果这是全天活动，我们不需要时间。
   if (event.isAllDay) { return }
 
   widget.addSpacer(7)
@@ -348,7 +348,7 @@ function displayEvent(widget, event) {
   formatText(time, eventTimeSize)
 }
 
-// Formats the times under each event.
+// 格式化每个事件下的时间。
 function formatTime(date) {
   let df = new DateFormatter()
   df.useNoDateStyle()
@@ -356,7 +356,7 @@ function formatTime(date) {
   return df.string(date)
 }
 
-// Format text based on the settings.
+// 根据设置格式化文本。
 function formatText(textItem, fontSize) {
   textItem.font = provideFont(fontName, fontSize)
   textItem.textColor = fontColor
@@ -369,14 +369,14 @@ function formatText(textItem, fontSize) {
   }
 }
 
-// Determines if two dates occur on the same day
+// 确定两个日期是否在同一天
 function sameDay(d1, d2) {
   return d1.getFullYear() === d2.getFullYear() &&
     d1.getMonth() === d2.getMonth() &&
     d1.getDate() === d2.getDate()
 }
 
-// Generate an alert with the provided array of options.
+// 使用提供的选项数组生成警报。
 async function generateAlert(message, options) {
 
   let alert = new Alert()
@@ -390,7 +390,7 @@ async function generateAlert(message, options) {
   return response
 }
 
-// Crop an image into the specified rect.
+// 将图像裁剪为指定的矩形。
 function cropImage(img, rect) {
 
   let draw = new DrawContext()
@@ -400,7 +400,7 @@ function cropImage(img, rect) {
   return draw.getImage()
 }
 
-// Pixel sizes and positions for widgets on all supported phones.
+// 所有支持的手机上小部件的像素大小和位置。
 function phoneSizes() {
   let phones = {
     "2688": {
