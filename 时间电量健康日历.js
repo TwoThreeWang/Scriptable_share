@@ -87,7 +87,8 @@ function renderWidget(options = []) {
  * 设置背景图片
  */
 async function setWidgetBackground() {
-  const url = "https://area.sinaapp.com/bingImg/"
+  // const url = "https://area.sinaapp.com/bingImg/"  // bing 壁纸
+  const url = "https://unsplash.it/1600/900?random"  // 随机图片
   const i = await new Request(url);
   const img = await i.loadImage();
   widget.backgroundImage = img
