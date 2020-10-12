@@ -1,4 +1,7 @@
-// 大组件显示问候语、时间、日历事件和天气
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: teal; icon-glyph: calendar-alt;
+// 大组件显示问候语、时间、电量、日历事件和天气
 
 
 /* -- PREVIEW YOUR WIDGET -- */
@@ -66,7 +69,7 @@ const numberOfEvents = 4
 const showTomorrow = true
 
 // 没有事件时写一条消息，或改成“”为空白。
-const noEventMessage = "🔆 Enjoy the rest of your day."
+const noEventMessage = "🎉 Enjoy the rest of your day."
 
 /* -- 间距 -- */
 
@@ -85,7 +88,7 @@ const elementSpacing = 12
 const fontName = "Futura-Medium"
 
 // 字体颜色
-const fontColor = new Color("#000000")
+const fontColor = new Color("#ffffff")
 
 // 更改每个元素的字体大小。
 const greetingSize = 18
@@ -109,7 +112,7 @@ let widget = new ListWidget()
 // 如果我们在窗口小部件中或正在测试中，先构建窗口小部件。
 if (config.runsInWidget || testMode) {
 
-  widget.backgroundImage = dx.img
+  widget.backgroundImage = await shadowImage(dx.img)
 
   if (verticalAlignment == "middle" || verticalAlignment == "bottom") {
     widget.addSpacer()
@@ -147,6 +150,11 @@ if (config.runsInWidget || testMode) {
   widget.addSpacer(elementSpacing)
   let TqEvents = widget.addText(`今天${wnl.data.work_tag} | ${CityTQ}`)
   formatText(TqEvents, noEventMessageSize)
+  
+  // 格式化电量信息
+  let batteryinfo = getBatteryInfo()
+  let batEvents = widget.addText(batteryinfo)
+  formatText(batEvents, 10)
 
   // 添加日历事件。
   if (showEvents) {
@@ -204,7 +212,7 @@ if (config.runsInWidget || testMode) {
   
   // 格式化健康日历
   widget.addSpacer(elementSpacing)
-  let rlEvents = widget.addText(`🔆 “ ${dx.title} ”`)
+  let rlEvents = widget.addText(`💁🏻‍♀️ “ ${dx.title} ”`)
   formatText(rlEvents, noEventMessageSize)
 
   if (verticalAlignment == "top" || verticalAlignment == "middle") {
@@ -345,3 +353,70 @@ async function generateAlert(message, options) {
   let response = await alert.presentAlert()
   return response
 }
+
+/**
+ * 判断是否在区域里
+ * @param {*} area 
+ * @param {*} value 
+ */
+function utilIsInArea(area, value) {
+  const matched = Object.keys(area).find(key => {
+    const [strat, end] = key.split('~')
+    return value > strat && value <= end
+  })
+  return area[matched]
+}
+
+/**
+ * 获取电池信息
+ */
+function getBatteryInfo() {
+  let batteryText = '🔋 '
+  // 是否在充电
+  const isCharging = Device.isCharging()
+  // 充电等级
+  const batteryLevel = Math.round(Device.batteryLevel() * 100)
+  
+  // 显示电量进度
+  const juice = "▓".repeat(Math.floor(batteryLevel / 10)); 
+  const used = "░".repeat(10 - juice.length);
+  batteryText += `${juice}${used} `
+
+  // 显示电量值
+  batteryText += `${batteryLevel}% `
+  
+  // 电量状态提示语枚举
+  const batteryTextMap = {
+    '0~10': "电量将耗尽,再不充电我就关机了!", //当电量少于10%
+    '10~20': "电量就剩不到20%了,尽快充电!", //当电量在10-20%
+    '20~30': "电量就快用完,赶紧充电!", //当电量在20-30%
+    '30~40': "电量用了大半了,尽快充电啦!", //当电量在30-40%
+    '40~50': "电量用了一半,有时间就充电啦!", //当电量在40-50%
+    '50~70': "电量还有大半呢,不用着急充电!", //当电量在50-70%
+    '70~80': "电量充足,不出远门没有问题!", //当电量在70-80%
+    '80~100': "电量充足,很有安全感!!!" //当电量在80-100%
+  }
+  if (isCharging) {
+    batteryText += batteryLevel < 100 ? "正在充电中⚡️⚡️⚡️" : "已充满电!请拔下电源!⚡️"
+  } else {
+    batteryText += utilIsInArea(batteryTextMap, batteryLevel)
+  }
+
+  return batteryText
+}
+
+/**
+   * 给图片加上半透明遮罩
+   * @param img 要处理的图片对象
+   * @return image
+   */
+async function shadowImage (img) {
+    let ctx = new DrawContext()
+    ctx.size = img.size
+    ctx.drawImageInRect(img, new Rect(0, 0, img.size['width'], img.size['height']))
+    // 图片遮罩颜色、透明度设置
+    ctx.setFillColor(new Color("#000000", 0.7))
+    ctx.fillRect(new Rect(0, 0, img.size['width'], img.size['height']))
+    let res = await ctx.getImage()
+    return res
+  }
