@@ -33,7 +33,7 @@ async function getDX() {
 
 // 获取万年历
 async function getWNL() {
-	const url = "https://api.error.work/api/calendar"
+	const url = "https://api.error.work/api/util/calendar"
 	const req = new Request(url)
 	const res = await req.loadJSON()
 	return res
