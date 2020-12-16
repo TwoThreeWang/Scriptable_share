@@ -45,14 +45,14 @@ async function createWidget() {
 }
 
 async function fetchdata() {
-  const url = "https://api.error.work/api/calendar"
+  const url = "https://api.error.work/api/util/calendar"
   let req = new Request(url)
   let json = await req.loadJSON()
   return json
 }
 
 async function fetchdu() {
-  const url = "https://api.error.work/api/dutang"
+  const url = "https://api.error.work/api/util/dutang"
   let req = new Request(url)
   let json = await req.loadJSON()
   return json
