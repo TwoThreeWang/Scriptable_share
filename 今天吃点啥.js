@@ -26,42 +26,42 @@ if (config.runsInWidget) {
       name: "黄焖鸡米饭",
       // Photo by Brooke Lark on Unsplash
       pic:
-        "https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-1.2.1&auto=format&fit=crop&w=1335&q=80",
+        "https://cdn.jsdelivr.net/gh/TwoThreeWang/Scriptable_share/images/photo-1490645935967-10de6ba17061.jpg",
     },
     // 沙县
     {
       name: "沙县小吃",
       // Photo by emy on Unsplash
       pic:
-        "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60",
+        "https://cdn.jsdelivr.net/gh/TwoThreeWang/Scriptable_share/images/photo-1455619452474-d2be8b1e70cd.jpg",
     },
     // 兰州拉面
     {
       name: "兰州拉面",
       // Photo by Thomas Tucker on Unsplash
       pic:
-        "https://images.unsplash.com/photo-1506354666786-959d6d497f1a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60",
+        "https://cdn.jsdelivr.net/gh/TwoThreeWang/Scriptable_share/images/photo-1506354666786-959d6d497f1a.jpg",
     },
     // 吉祥馄饨
     {
       name: "吉祥馄饨",
       // Photo by Robin Stickel on Unsplash
       pic:
-        "https://images.unsplash.com/photo-1460306855393-0410f61241c7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60",
+        "https://cdn.jsdelivr.net/gh/TwoThreeWang/Scriptable_share/images/photo-1460306855393-0410f61241c7.jpg",
     },
     // 猪脚饭
     {
       name: "猪脚饭",
       // Photo by Alex Munsell on Unsplash
       pic:
-        "https://images.unsplash.com/photo-1432139555190-58524dae6a55?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60",
+        "https://cdn.jsdelivr.net/gh/TwoThreeWang/Scriptable_share/images/photo-1432139555190-58524dae6a55.jpg",
     },
     // 炒粉干
     {
       name: "炒粉干",
       // Photo by Davide Cantelli on Unsplash
       pic:
-        "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60",
+        "https://cdn.jsdelivr.net/gh/TwoThreeWang/Scriptable_share/images/photo-1476224203421-9ac39bcb3327.jpg",
     },
   ];
 
