@@ -1,5 +1,7 @@
 # Scriptable_share
 
+不再更新！
+
 自用 Scriptable 软件美化 ios14 小组件脚本分享
 
 1. Health_calendar 丁香健康日历
